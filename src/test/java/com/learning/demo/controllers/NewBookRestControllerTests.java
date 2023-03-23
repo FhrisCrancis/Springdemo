@@ -56,4 +56,59 @@ public class NewBookRestControllerTests {
         assertEquals("It", book.getTitle());
         assertEquals("Stephen King", book.getAuthor());
     }
+
+    @Test
+    public void testUpdateWithPut(){
+        service.save(new Book("Kujo", "Stephen King"));
+
+        List<Book> books = new ArrayList<>();
+        controller.getAllBooks().forEach(books::add);
+        assertEquals(1, books.size());
+        Book book = books.get(0);
+        int id = book.getBookId();
+
+        BookDto bookDto = new BookDto(book);
+        bookDto.setTitle("Jotaro");
+        bookDto.setAuthor("Stephen King");
+        controller.updateWithPut(id, bookDto);
+
+        Book result = controller.verifyBook(id);
+        assertEquals("Jotaro", result.getTitle());
+        assertEquals("Stephen King", result.getAuthor());
+    }
+
+    @Test
+    public void testUpdateWithPatch(){
+        service.save(new Book("Kujo", "Stephen King"));
+
+        List<Book> books = new ArrayList<>();
+        controller.getAllBooks().forEach(books::add);
+        assertEquals(1, books.size());
+        Book book = books.get(0);
+        int id = book.getBookId();
+
+        BookDto bookDto = new BookDto(book);
+        bookDto.setTitle("Jotaro");
+        bookDto.setAuthor(null);
+        controller.updateWithPatch(id, bookDto);
+
+        Book result = controller.verifyBook(id);
+        assertEquals("Jotaro", result.getTitle());
+        assertEquals("Stephen King", result.getAuthor());
+    }
+
+    @Test
+    public void testDelete(){
+        service.save(new Book("Kujo", "Stephen King"));
+        List<Book> books = new ArrayList<>();
+        controller.getAllBooks().forEach(books::add);
+        assertEquals(1, books.size());
+        Book book = books.get(0);
+        int id = book.getBookId();
+
+        controller.deleteBook(id);
+
+        int count = controller.getAllBooks().size();
+        assertEquals(0, count);
+    }
 }
